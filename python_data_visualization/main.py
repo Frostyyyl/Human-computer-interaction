@@ -29,7 +29,26 @@ def read_file(file_name: str) -> tuple[List[float], List[float]]:
 
 
 def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List[float]]) -> None:
-    fig, axs = plt.subplots(1, 2, figsize=(6.4, 5))
+    # set the font properties
+    plt.rcParams['font.size'] = 9.6
+    plt.rcParams['mathtext.fontset'] = 'stix'
+    plt.rcParams['font.family'] = 'STIXGeneral'
+    plt.rcParams['axes.titlesize'] = 9.6
+    plt.rcParams['legend.fontsize'] = 9.5
+    # set the rest of the parameters
+    plt.rcParams['xtick.direction'] = 'in'
+    plt.rcParams['xtick.top'] = True
+    plt.rcParams['xtick.bottom'] = True
+    plt.rcParams['xtick.major.size'] = 3
+    plt.rcParams['xtick.major.width'] = 0.7
+    plt.rcParams['ytick.direction'] = 'in'
+    plt.rcParams['ytick.right'] = True
+    plt.rcParams['ytick.major.size'] = 3.7
+    plt.rcParams['ytick.major.width'] = 0.7
+    plt.rcParams['legend.edgecolor'] = 'gray'
+
+    # define the size and number of subplots
+    fig, axs = plt.subplots(1, 2, figsize=(6.4, 5)) 
 
     # add data to the first subplot
     for i, data in enumerate(combined_data):
@@ -85,27 +104,6 @@ def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List
 
 
 def main() -> None:
-    # set the font properties
-    plt.rcParams['font.size'] = 9.6
-    plt.rcParams['mathtext.fontset'] = 'stix'
-    plt.rcParams['font.family'] = 'STIXGeneral'
-    plt.rcParams['axes.titlesize'] = 9.6
-    plt.rcParams['legend.fontsize'] = 9.5
-
-    # set the rest of the parameters
-    plt.rcParams['xtick.direction'] = 'in'
-    plt.rcParams['xtick.top'] = True
-    plt.rcParams['xtick.bottom'] = True
-    plt.rcParams['xtick.major.size'] = 3
-    plt.rcParams['xtick.major.width'] = 0.7
-
-    plt.rcParams['ytick.direction'] = 'in'
-    plt.rcParams['ytick.right'] = True
-    plt.rcParams['ytick.major.size'] = 3.7
-    plt.rcParams['ytick.major.width'] = 0.7
-
-    plt.rcParams['legend.edgecolor'] = 'gray'
-
     # read the data
     combined_data = []
     boxplot_combined_data = []
