@@ -48,7 +48,7 @@ def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List
     plt.rcParams['legend.edgecolor'] = 'gray'
 
     # define the size and number of subplots
-    fig, axs = plt.subplots(1, 2, figsize=(6.4, 5)) 
+    fig, axs = plt.subplots(1, 2, figsize=(6.4, 5))
 
     # add data to the first subplot
     for i, data in enumerate(combined_data):
@@ -67,6 +67,7 @@ def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List
     #
     # apply common changes
     #
+    fig.canvas.manager.set_window_title('Python i wizualizacja')
     for ax in axs:
         ax.set_ylim(60, 100)
         ax.set_yticks(arange(60, 101, 5)) # make sure the tick step is 5
