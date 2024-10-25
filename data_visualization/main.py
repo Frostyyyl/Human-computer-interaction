@@ -4,7 +4,7 @@ from pandas import read_csv
 from typing import List
 
 # NOTE: SET THE FOLDER CONTAINING THE DATA FILES !
-files_path = './python_data_visualization/data'
+files_path = './data_visualization/data'
 
 # file names with corresponding data settings
 file_names = ['rsel.csv', 'cel-rs.csv', '2cel-rs.csv', 'cel.csv', '2cel.csv'] 
@@ -67,7 +67,7 @@ def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List
     #
     # apply common changes
     #
-    fig.canvas.manager.set_window_title('Python i wizualizacja')
+    fig.canvas.manager.set_window_title('Data visualization')
     for ax in axs:
         ax.set_ylim(60, 100)
         ax.set_yticks(arange(60, 101, 5)) # make sure the tick step is 5
@@ -101,6 +101,7 @@ def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List
     for spine in axs[1].spines.values():
         spine.set_linewidth(0.7)
 
+    fig.savefig('data_visualization/plot.pdf')
     plt.show()
 
 
