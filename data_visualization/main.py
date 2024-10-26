@@ -15,9 +15,9 @@ markers = ['o', 'v', 'D', 's', 'd']
 
 def read_file(file_name: str) -> tuple[List[float], List[float]]:
     data_reader = read_csv(f'{files_path}/{file_name}', skiprows=1, header=None)
-    
+
     data = []
-    for _, row in data_reader.iloc[:-1].iterrows():
+    for _, row in data_reader.iterrows():
         # read the average value for each of the runs
         # multiply for better visualization
         avg = row[2:].mean() * 100
@@ -52,7 +52,7 @@ def draw_plot(combined_data: List[List[float]], boxplot_combined_data: List[List
 
     # add data to the first subplot
     for i, data in enumerate(combined_data):
-        axs[0].plot(arange(1, 200 , 1), data, markers[i], ls='-', label=legend_names[i], linewidth=0.85, 
+        axs[0].plot(data, markers[i], ls='-', label=legend_names[i], linewidth=0.85, 
         color=data_colors[i], markevery=25, markeredgecolor='black', markersize=5, markeredgewidth=0.5)
 
     # add data to the second subplot and change style of boxplot
