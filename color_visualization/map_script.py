@@ -3,16 +3,16 @@ import numpy as np
 from matplotlib import colors
 
 # NOTE: SET THE FOLDER CONTAINING THE DATA FILES !
-files_path = './data_visualization/data'
+files_path = './color_visualization/data'
+dest_path = './color_visualization'
+
 
 def hsv2rgb(h, s, v): # supporting function converting hsv to rgb
-    hsv = np.zeros(shape=(1, 3), dtype=float)
-    hsv[0, 0] = h
-    hsv[0, 1] = s
-    hsv[0, 2] = v
+    hsv = np.array([h, s, v])
     rgb = colors.hsv_to_rgb(hsv)
-    r, g, b = rgb[0, 0], rgb[0, 1], rgb[0, 2]
+    r, g, b = rgb[0], rgb[1], rgb[2]
     return (r, g, b)
+
 
 # calculate the gradient for each pixel individually
 def map_gradient(value, angle):
@@ -51,6 +51,7 @@ def compound_map_gradient(values, angles):
 
     return colors.hsv_to_rgb(np.stack((hue, saturation, brightness), axis=-1))
 
+
 def read_file(file_path):
     with open(file_path, 'r') as file:
         # read the first line
@@ -63,6 +64,7 @@ def read_file(file_path):
 
         return (data, params)
     
+
 def draw_map(data, angles, params):
     # set the font
     plt.rcParams['mathtext.fontset'] = 'stix'
@@ -97,7 +99,8 @@ def draw_map(data, angles, params):
     # im = ax.imshow(img, aspect='auto')
     # im.set_extent([0, params[0] - 1, params[1] - 1, 0])
 
-    fig.savefig('map.pdf')
+    fig.savefig(f'{dest_path}/map.pdf')
+
 
 def calculate_normals(data, params):
     normal_vectors = np.empty((params[0], params[1], 3))
@@ -146,6 +149,7 @@ def calculate_normals(data, params):
 
     return normal_vectors
 
+
 def calculate_angles(data, normal_vectors, params, sun):
     angles = np.empty((params[0], params[1]))
     dist = params[2]
@@ -175,7 +179,8 @@ def calculate_angles(data, normal_vectors, params, sun):
 
     return angles
 
-if __name__ == '__main__':
+
+def main():
     data, params = read_file(f'{files_path}/big.dem')
     dist = params[2]
 
@@ -187,3 +192,7 @@ if __name__ == '__main__':
     angles = calculate_angles(data, normal_vectors, params, sun)
 
     draw_map(data, angles, params)
+
+
+if __name__ == '__main__':
+    main()
