@@ -19,11 +19,21 @@ from matplotlib_inline.backend_inline import flush_figures
 import glob
 
 columns = 6
-rows = 4
+rows = 4 
+
+Kh = array([[ 1, 2, 1],
+            [ 0, 0, 0],
+            [-1,-2,-1]]) 
+Kv = array([[ 1, 0,-1],
+            [ 2, 0,-2],
+            [ 1, 0,-1]])
 
 # dimensions of images
 images_dim = []
+# 
 
+
+# read every image from file_path
 def read_data(file_path):
     images = []
     for filename in glob.glob(file_path + '/*.jpg'):
@@ -34,6 +44,7 @@ def read_data(file_path):
         images_dim.append([h, w]) 
     return images
 
+# show collection of images
 def show_images(data):
     fig = plt.figure(figsize=(13, 8))
 
@@ -44,22 +55,55 @@ def show_images(data):
     plt.subplots_adjust(wspace=0.05, hspace=0.05)
     plt.show()
 
-def convolve_images(data):
-    SIZE=5
-    K = ones([SIZE,SIZE])
-    K = K / sum(K)
+# convolution with changing to grayscale
+def convolve_images(data, k_array):
+    k_array = k_array / k_array[k_array > 0].sum()
 
     new_data = []
     for image in data:
         if image.ndim == 3:
             image = rgb2gray(image)
-        new_data.append(convolve(image, K))
+        new_data.append(convolve(image, k_array))
+    
+    return new_data
+
+def contrast(data, perc):
+    new_data = []
+    for image in data:
+        MIN = np.percentile(image, perc)
+        MAX = np.percentile(image, 100-perc)
+        norm = (image - MIN) / (MAX - MIN)
+        norm[norm[:,:] > 1] = 1
+        norm[norm[:,:] < 0] = 0
+        new_data.append(norm)
+
+    return new_data
+
+# image binarization
+def thresh(data, t_value):
+    new_data = []
+    for image in data:
+        binary = (image > t_value)
+        binary = np.uint8(binary)
+        new_data.append(binary)
     
     return new_data
 
 
 if __name__ == '__main__':
     plane_images = read_data("./images/planes")
+    
+    fixed_planes = convolve_images(plane_images, ones([7,7]))
 
-    fixed_planes = convolve_images(plane_images)
+    # gamma change
+    for i in range(len(fixed_planes)):
+        fixed_planes[i] = fixed_planes[i] ** 0.4
+
+    fixed_planes = thresh(fixed_planes, 0.5)
+    
+    # fixed_planes = convolve_images(fixed_planes, Kh)
+    # fixed_planes = convolve_images(fixed_planes, Kv)
+
+    # fixed_planes = contrast(fixed_planes, 2.0)
+
     show_images(fixed_planes)
