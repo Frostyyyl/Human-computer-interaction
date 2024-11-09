@@ -21,16 +21,8 @@ import glob
 columns = 6
 rows = 4 
 
-Kh = array([[ 1, 2, 1],
-            [ 0, 0, 0],
-            [-1,-2,-1]]) 
-Kv = array([[ 1, 0,-1],
-            [ 2, 0,-2],
-            [ 1, 0,-1]])
-
 # dimensions of images
 images_dim = []
-# 
 
 
 # read every image from file_path
@@ -44,6 +36,15 @@ def read_data(file_path):
         images_dim.append([h, w]) 
     return images
 
+# most common value, working for grayscaled images
+# probably not that useful
+def get_commmon_value(image):
+    image = (image * 255).astype(np.uint8) # convert to 0-255 for bincount()
+    flattened_image = image.flatten() # flatten to 1 dimensional array
+    counts = np.bincount(flattened_image) # count every value
+    most_common_value = np.argmax(counts) # get back to 0-1
+    return most_common_value / 255
+
 # show collection of images
 def show_images(data):
     fig = plt.figure(figsize=(13, 8))
@@ -56,54 +57,49 @@ def show_images(data):
     plt.show()
 
 # convolution with changing to grayscale
-def convolve_images(data, k_array):
+def convolve_images(image, k_array):
     k_array = k_array / k_array[k_array > 0].sum()
 
-    new_data = []
-    for image in data:
-        if image.ndim == 3:
-            image = rgb2gray(image)
-        new_data.append(convolve(image, k_array))
+    if image.ndim == 3:
+        image = rgb2gray(image)
+    image = convolve(image, k_array)
     
-    return new_data
+    return image
 
-def contrast(data, perc):
-    new_data = []
-    for image in data:
-        MIN = np.percentile(image, perc)
-        MAX = np.percentile(image, 100-perc)
-        norm = (image - MIN) / (MAX - MIN)
-        norm[norm[:,:] > 1] = 1
-        norm[norm[:,:] < 0] = 0
-        new_data.append(norm)
+def contrast(image, perc):
+    MIN = np.percentile(image, perc)
+    MAX = np.percentile(image, 100-perc)
+    norm = (image - MIN) / (MAX - MIN)
+    norm[norm[:,:] > 1] = 1
+    norm[norm[:,:] < 0] = 0
 
-    return new_data
+    return norm
 
 # image binarization
-def thresh(data, t_value):
-    new_data = []
-    for image in data:
-        binary = (image > t_value)
-        binary = np.uint8(binary)
-        new_data.append(binary)
+def thresh(image):
+    binary = (image >  (get_commmon_value(image)))
+    binary = np.uint8(binary)
     
-    return new_data
+    return binary
 
 
 if __name__ == '__main__':
     plane_images = read_data("./images/planes")
+    fixed_planes = []
     
-    fixed_planes = convolve_images(plane_images, ones([7,7]))
+    for image in plane_images:
+        new_image = image
 
-    # gamma change
-    for i in range(len(fixed_planes)):
-        fixed_planes[i] = fixed_planes[i] ** 0.4
+        new_image = convolve_images(new_image, ones([11,11]))
+        new_image = new_image ** 0.4
+        new_image = contrast(new_image, 0.2)
 
-    fixed_planes = thresh(fixed_planes, 0.5)
-    
-    # fixed_planes = convolve_images(fixed_planes, Kh)
-    # fixed_planes = convolve_images(fixed_planes, Kv)
+        noisy_image = img_as_ubyte(new_image)
+        new_image =  rank.mean(noisy_image, disk(8)) #filters.median(new_image, disk(4))
 
-    # fixed_planes = contrast(fixed_planes, 2.0)
+        # new_image = thresh(new_image)
+        # new_image = filters.sobel(new_image)
+
+        fixed_planes.append(new_image)
 
     show_images(fixed_planes)
